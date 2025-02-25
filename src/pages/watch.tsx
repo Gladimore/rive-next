@@ -302,8 +302,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.TURBOVID}/embed/movie/${id}`
-              : `${STREAM_URLS.TURBOVID}/embed/tv/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.TURBOVID}/api/req/movie/${id}`
+              : `${STREAM_URLS.TURBOVID}/api/req/tv/${id}/${season}/${episode}`
           }
           className={styles.iframe}
           allowFullScreen
