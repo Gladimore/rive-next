@@ -263,8 +263,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.VIDSRC}/embed/${id}`
-              : `${STREAM_URLS.VIDSRC}/embed/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.VIDSRC}/embed/movie/${id}`
+              : `${STREAM_URLS.VIDSRC}/embed/tv/${id}/${season}/${episode}`
           }
           className={styles.iframe}
           allowFullScreen
@@ -276,8 +276,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.VIDVIP}/embed/${id}`
-              : `${STREAM_URLS.VIDVIP}/embed/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.VIDVIP}/embed/movie/${id}`
+              : `${STREAM_URLS.VIDVIP}/embed/tv/${id}/${season}/${episode}`
           }
           className={styles.iframe}
           allowFullScreen
@@ -289,8 +289,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.EMB}/embed/${id}`
-              : `${STREAM_URLS.EMB}/embed/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.EMB}/embed/movie/${id}`
+              : `${STREAM_URLS.EMB}/embed/tv/${id}/${season}/${episode}`
           }
           className={styles.iframe}
           allowFullScreen
@@ -302,8 +302,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.TURBOVID}/embed/${id}`
-              : `${STREAM_URLS.TURBOVID}/embed/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.TURBOVID}/embed/movie/${id}`
+              : `${STREAM_URLS.TURBOVID}/embed/tv/${id}/${season}/${episode}`
           }
           className={styles.iframe}
           allowFullScreen
@@ -315,8 +315,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.MOVIESAPI}/embed/${id}`
-              : `${STREAM_URLS.MOVIESAPI}/embed/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.MOVIESAPI}/embed/movie/${id}`
+              : `${STREAM_URLS.MOVIESAPI}/embed/tv/${id}/${season}/${episode}`
           }
           className={styles.iframe}
           allowFullScreen
