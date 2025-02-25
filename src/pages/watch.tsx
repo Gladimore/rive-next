@@ -285,7 +285,11 @@ const Watch = () => {
       {source === "TURBOVID" && id !== "" && id !== null ? (
         <iframe
           scrolling="no"
-          src={`${STREAM_URLS.TURBOVID}/?v=${id}`}
+          src={
+            type === "movie"
+              ? `${STREAM_URLS.TURBOVID}/embed/${id}`
+              : `${STREAM_URLS.TURBOVID}/embed/${id}/${season}/${episode}`
+          }
           className={styles.iframe}
           allowFullScreen
         ></iframe>
@@ -294,7 +298,11 @@ const Watch = () => {
       {source === "MOVIESAPI" && id !== "" && id !== null ? (
         <iframe
           scrolling="no"
-          src={`${STREAM_URLS.MOVIESAPI}?id=${id}`}
+          src={
+            type === "movie"
+              ? `${STREAM_URLS.MOVIESAPI}/embed/${id}`
+              : `${STREAM_URLS.MOVIESAPI}/embed/${id}/${season}/${episode}`
+          }
           className={styles.iframe}
           allowFullScreen
         ></iframe>
