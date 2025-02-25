@@ -235,10 +235,10 @@ const Watch = () => {
         value={source}
         onChange={(e) => setSource(e.target.value)}
       >
-        <option value="VIDSRC">VideoSrc : 1</option>
-        <option value="VIDVIP">VideoVIP : 2</option>
-        <option value="EMB">Embed : 3</option>
-        <option value="TURBOVID">TurboVid : 4</option>
+        <option value="TURBOVID">TurboVid : 1</option>
+        <option value="VIDSRC">VideoSrc : 2</option>
+        <option value="VIDVIP">VideoVIP : 3</option>
+        <option value="EMB">Embed : 4</option>
         <option value="MOVIESAPI">MoviesAPI : 5</option>
       </select>
       <div className={`${styles.loader} skeleton`}></div>
