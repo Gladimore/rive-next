@@ -177,12 +177,11 @@ const Watch = () => {
 
   // Environment streaming URLs
   const STREAM_URLS = {
-    AGG: process.env.NEXT_PUBLIC_STREAM_URL_AGG,
-    VID: process.env.NEXT_PUBLIC_STREAM_URL_VID,
-    PRO: process.env.NEXT_PUBLIC_STREAM_URL_PRO,
-    EMB: process.env.NEXT_PUBLIC_STREAM_URL_EMB,
-    MULTI: process.env.NEXT_PUBLIC_STREAM_URL_MULTI,
-    SUP: process.env.NEXT_PUBLIC_STREAM_URL_SUP,
+    VIDSRC: NEXT_PUBLIC_STREAM_URL_VIDSRC.
+    VIDVIP: NEXT_PUBLIC_STREAM_URL_VIDVIP,
+    EMB: NEXT_PUBLIC_STREAM_URL_EMB,
+    TURBOVID: NEXT_PUBLIC_STREAM_URL_TURBOVID,
+    MOVIESAPI: NEXT_PUBLIC_STREAM_URL_MOVIESAPI
   };
 
   // Helper to generate iframe source URL
@@ -279,12 +278,11 @@ const Watch = () => {
         value={source}
         onChange={(e) => setSource(e.target.value)}
       >
-        <option value="AGG">Aggregator : 1 (Multi-Server)</option>
-        <option value="VID">Aggregator : 2 (Best-Server)</option>
-        <option value="PRO">Aggregator : 3 (HQ-Server)</option>
-        <option value="EMB">Aggregator : 4</option>
-        <option value="MULTI">Aggregator : 5 (Fast-Server)</option>
-        <option value="SUP">Aggregator : 6 (Multi/Most-Server)</option>
+        <option value="VIDSRC">Aggregator : 1</option>
+        <option value="VIDVIP">Aggregator : 2 (Best-Server)</option>
+        <option value="EMB">Aggregator : 3</option>
+        <option value="TURBOVID">Aggregator : 4</option>
+        <option value="MOVIESAPI">Aggregator : 5</option>
       </select>
       <div className={`${styles.loader} skeleton`}></div>
       {!loading && id && (
