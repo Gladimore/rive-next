@@ -12,7 +12,6 @@ import WatchDetails from "@/components/WatchDetails";
 const Watch = () => {
   const params = useSearchParams();
   const { back, push } = useRouter();
-  // console.log(params.get("id"));
   const [type, setType] = useState<string | null>("");
   const [id, setId] = useState<any>();
   const [season, setSeason] = useState<any>();
@@ -90,6 +89,22 @@ const Watch = () => {
   }, [params, id, season, episode]);
 
   useEffect(() => {
+    // Block window.close() for any iframe content
+    const blockClose = () => {
+      window.close = () => {
+        console.log("Blocked window.close() attempt.");
+      };
+    };
+
+    blockClose();
+
+    return () => {
+      // Cleanup (restore the original behavior if needed)
+      window.close = () => {}; 
+    };
+  }, []);
+
+  useEffect(() => {
     toast.info(
       <div>
         Cloud: use AD-Blocker services for AD-free experience, like AD-Blocker
@@ -155,7 +170,7 @@ const Watch = () => {
   }
 
   return (
- <div className={styles.watch}>
+    <div className={styles.watch}>
       <div onClick={() => back()} className={styles.backBtn}>
         <IoReturnDownBack
           data-tooltip-id="tooltip"
