@@ -12,96 +12,93 @@ import WatchDetails from "@/components/WatchDetails";
 const Watch = () => {
   const params = useSearchParams();
   const { back, push } = useRouter();
-  const [type, setType] = useState<string | null>(null);
-  const [id, setId] = useState<string | null>(null);
-  const [season, setSeason] = useState<string | null>(null);
-  const [episode, setEpisode] = useState<string | null>(null);
+  // console.log(params.get("id"));
+  const [type, setType] = useState<string | null>("");
+  const [id, setId] = useState<any>();
+  const [season, setSeason] = useState<any>();
+  const [episode, setEpisode] = useState<any>();
   const [minEpisodes, setMinEpisodes] = useState(1);
   const [maxEpisodes, setMaxEpisodes] = useState(2);
   const [maxSeason, setMaxSeason] = useState(1);
   const [nextSeasonMinEpisodes, setNextSeasonMinEpisodes] = useState(1);
   const [loading, setLoading] = useState(true);
   const [watchDetails, setWatchDetails] = useState(false);
-  const [data, setData] = useState<any>(null);
-  const [source, setSource] = useState("VIDSRC");
-  const nextBtn = useRef(null);
-  const backBtn = useRef(null);
-  const moreBtn = useRef(null);
-
-  // New stream URLs
-  const STREAM_URLS = {
-    VIDSRC: process.env.NEXT_PUBLIC_STREAM_URL_VIDSRC,
-    VIDVIP: process.env.NEXT_PUBLIC_STREAM_URL_VIDVIP,
-    EMB: process.env.NEXT_PUBLIC_STREAM_URL_EMB,
-    TURBOVID: process.env.NEXT_PUBLIC_STREAM_URL_TURBOVID,
-    MOVIESAPI: process.env.NEXT_PUBLIC_STREAM_URL_MOVIESAPI
-  };
+  const [data, setdata] = useState<any>();
+  const [source, setSource] = useState("SUP");
+  const nextBtn: any = useRef(null);
+  const backBtn: any = useRef(null);
+  const moreBtn: any = useRef(null);
+  if (type === null && params.get("id") !== null) setType(params.get("type"));
+  if (id === null && params.get("id") !== null) setId(params.get("id"));
+  if (season === null && params.get("season") !== null)
+    setSeason(params.get("season"));
+  if (episode === null && params.get("episode") !== null)
+    setEpisode(params.get("episode"));
 
   useEffect(() => {
-    const init = async () => {
-      setLoading(true);
-      setType(params.get("type"));
-      setId(params.get("id"));
-      setSeason(params.get("season"));
-      setEpisode(params.get("episode"));
-      setContinueWatching({ type: params.get("type"), id: params.get("id") });
-
-      if (type === "tv") {
-        const res = await axiosFetch({ requestID: `${type}Data`, id });
-        setData(res);
-        setMaxSeason(res?.number_of_seasons);
-
-        const seasonData = await axiosFetch({
+    setLoading(true);
+    setType(params.get("type"));
+    setId(params.get("id"));
+    setSeason(params.get("season"));
+    setEpisode(params.get("episode"));
+    setContinueWatching({ type: params.get("type"), id: params.get("id") });
+    const fetch = async () => {
+      const res: any = await axiosFetch({ requestID: `${type}Data`, id: id });
+      setdata(res);
+      setMaxSeason(res?.number_of_seasons);
+      const seasonData = await axiosFetch({
+        requestID: `tvEpisodes`,
+        id: id,
+        season: season,
+      });
+      seasonData?.episodes?.length > 0 &&
+        setMaxEpisodes(
+          seasonData?.episodes[seasonData?.episodes?.length - 1]
+            ?.episode_number,
+        );
+      setMinEpisodes(seasonData?.episodes[0]?.episode_number);
+      if (parseInt(episode) >= maxEpisodes - 1) {
+        var nextseasonData = await axiosFetch({
           requestID: `tvEpisodes`,
-          id,
-          season,
+          id: id,
+          season: parseInt(season) + 1,
         });
-
-        if (seasonData?.episodes?.length > 0) {
-          setMaxEpisodes(seasonData.episodes[seasonData.episodes.length - 1]?.episode_number);
-          setMinEpisodes(seasonData.episodes[0]?.episode_number);
-
-          if (parseInt(episode) >= maxEpisodes - 1) {
-            const nextSeasonData = await axiosFetch({
-              requestID: `tvEpisodes`,
-              id,
-              season: parseInt(season) + 1,
-            });
-
-            if (nextSeasonData?.episodes?.length > 0) {
-              setNextSeasonMinEpisodes(nextSeasonData.episodes[0]?.episode_number);
-            }
-          }
-        }
+        nextseasonData?.episodes?.length > 0 &&
+          setNextSeasonMinEpisodes(nextseasonData?.episodes[0]?.episode_number);
       }
-      setLoading(false);
     };
+    if (type === "tv") fetch();
 
-    init();
-  }, [params, id, season, episode]);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (event: any) => {
       if (event.shiftKey && event.key === "N") {
         event.preventDefault();
-        nextBtn.current?.click();
+        nextBtn?.current.click();
+        // handleForward();
+        // console.log("next");
       } else if (event.shiftKey && event.key === "P") {
         event.preventDefault();
-        backBtn.current?.click();
+        backBtn?.current.click();
+        // handleBackward();
+        // console.log("prev");
       } else if (event.shiftKey && event.key === "M") {
         event.preventDefault();
-        moreBtn.current?.click();
+        moreBtn?.current.click();
       }
     };
 
+    // Add event listener when component mounts
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
+    // Remove event listener when component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [params, id, season, episode]);
   useEffect(() => {
     toast.info(
       <div>
-        Cloud: use AD-Blocker services for AD-free experience, like{" "}
+        Cloud: use AD-Blocker services for AD-free experience, like AD-Blocker
+        extension or{" "}
         <a target="_blank" href="https://brave.com/">
           Brave Browser{" "}
         </a>
@@ -134,116 +131,117 @@ const Watch = () => {
         </a>
       </div>,
     );
+    // window.addEventListener("keydown", (event) => {
+    //   console.log("Key pressed:", event.key);
+    // });
   }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log({ id });
+  //     setLoading(false);
+  //   }, 1000);
+  // }, [id]);
 
-  const handleBackward = () => {
+  // useEffect(() => {
+  //   // Override window.open to prevent opening new tabs
+  //   window.open = function (url, target, features, replace) {
+  //     console.log("window.open is blocked:", url);
+  //     return null; // Return null to prevent opening new tabs
+  //   };
+  // }, [window]);
+
+  function handleBackward() {
+    // setEpisode(parseInt(episode)+1);
     if (episode > minEpisodes)
-      push(`/watch?type=tv&id=${id}&season=${season}&episode=${parseInt(episode) - 1}`);
-  };
-
-  const handleForward = () => {
+      push(
+        `/watch?type=tv&id=${id}&season=${season}&episode=${parseInt(episode) - 1}`,
+      );
+  }
+  function handleForward() {
+    // setEpisode(parseInt(episode)+1);
     if (episode < maxEpisodes)
-     (`/watch?type=tv&id=${id}&season=${season}&episode=${parseInt(episode) + 1}`);
+      push(
+        `/watch?type=tv&id=${id}&season=${season}&episode=${parseInt(episode) + 1}`,
+      );
     else if (parseInt(season) + 1 <= maxSeason)
-      push(`/watch?type=tv&id=${id}&season=${parseInt(season) + 1}&episode=${nextSeasonMinEpisodes}`);
-  };
+      push(
+        `/watch?type=tv&id=${id}&season=${parseInt(season) + 1}&episode=${nextSeasonMinEpisodes}`,
+      );
+  }
 
-  const getStreamUrl = () => {
-    const { VIDSRC, VIDVIP, EMB, TURBOVID, MOVIESAPI } = STREAM_URLS;
-    const isMovie = type === "movie";
-
-    switch (source) {
-      case "VIDSRC":
-        return isMovie
-          ? `${VIDSRC}/embed/${id}`
-          : `${VIDSRC}/embed/${type}/${id}/${season}/${episode}`;
-      case "VIDVIP":
-        return isMovie
-          ? `${VIDVIP}/embed/${id}`
-          : `${VIDVIP}/embed/${type}/${id}/${season}/${episode}`;
-      case "EMB":
-        return isMovie
-          ? `${EMB}/embed/${type}/${id}`
-          : `${EMB}/embed/${type}/${id}/${season}/${episode}`;
-      case "TURBOVID":
-        return isMovie
-          ? `${TURBOVID}/embed/${type}/${id}`
-          : `${TURBOVID}/embed/${type}/${id}/${season}/${episode}`;
-      case "MOVIESAPI":
-        return isMovie
-          ? `${MOVIESAPI}?video_id=${id}&tmdb=1`
-          : `${MOVIESAPI}?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
-      default:
-        return "";
-    }
-  };
+  const STREAM_URL_AGG = process.env.NEXT_PUBLIC_STREAM_URL_AGG;
+  const STREAM_URL_VID = process.env.NEXT_PUBLIC_STREAM_URL_VID;
+  const STREAM_URL_PRO = process.env.NEXT_PUBLIC_STREAM_URL_PRO;
+  const STREAM_URL_EMB = process.env.NEXT_PUBLIC_STREAM_URL_EMB;
+  const STREAM_URL_MULTI = process.env.NEXT_PUBLIC_STREAM_URL_MULTI;
+  const STREAM_URL_SUP = process.env.NEXT_PUBLIC_STREAM_URL_SUP;
 
   return (
     <div className={styles.watch}>
-      <div onClick={back} className={styles.backBtn}>
+      <div onClick={() => back()} className={styles.backBtn}>
         <IoReturnDownBack
           data-tooltip-id="tooltip"
           data-tooltip-content="go back"
         />
       </div>
-
-      <div className={styles.episodeControl}>
-        {type === "tv" && (
-          <>
-            <div
-              ref={backBtn}
-              onClick={() => episode > minEpisodes && handleBackward()}
-              data-tooltip-id="tooltip"
-              data-tooltip-html={
-                episode > minEpisodes
-                  ? "<div>Previous episode <span class='tooltip-btn'>SHIFT + P</span></div>"
-                  : `Start of season ${season}`
-              }
-            >
-              <FaBackwardStep
-                className={`${episode <= minEpisodes ? styles.inactive : null}`}
-              />
-            </div>
-
-            <div
-              ref={nextBtn}
-              onClick={() =>
-                (episode < maxEpisodes || parseInt(season) + 1 <= maxSeason) &&
-                handleForward()
-              }
-              data-tooltip-id="tooltip"
-              data-tooltip-html={
-                episode < maxEpisodes
-                  ? "<div>Next episode <span class='tooltip-btn'>SHIFT + N</span></div>"
-                  : parseInt(season) + 1 <= maxSeason
+      {
+        <div className={styles.episodeControl}>
+          {type === "tv" ? (
+            <>
+              <div
+                ref={backBtn}
+                onClick={() => {
+                  if (episode > 1) handleBackward();
+                }}
+                data-tooltip-id="tooltip"
+                data-tooltip-html={
+                  episode > minEpisodes
+                    ? "<div>Previous episode <span class='tooltip-btn'>SHIFT + P</span></div>"
+                    : `Start of season ${season}`
+                }
+              >
+                <FaBackwardStep
+                  className={`${episode <= minEpisodes ? styles.inactive : null}`}
+                />
+              </div>
+              <div
+                ref={nextBtn}
+                onClick={() => {
+                  if (
+                    episode < maxEpisodes ||
+                    parseInt(season) + 1 <= maxSeason
+                  )
+                    handleForward();
+                }}
+                data-tooltip-id="tooltip"
+                data-tooltip-html={
+                  episode < maxEpisodes
+                    ? "<div>Next episode <span class='tooltip-btn'>SHIFT + N</span></div>"
+                    : parseInt(season) + 1 <= maxSeason
                       ? `<div>Start season ${parseInt(season) + 1} <span class='tooltip-btn'>SHIFT + N</span></div>`
                       : `End of season ${season}`
-              }
-            >
-              <FaForwardStep
-                className={`${
-                  episode >= maxEpisodes && season >= maxSeason ? styles.inactive : null
-                } ${
-                  episode >= maxEpisodes && season < maxSeason ? styles.nextSeason : null
-                }`}
-              />
-            </div>
-          </>
-        )}
-        <div
-          ref={moreBtn}
-          onClick={() => setWatchDetails(!watchDetails)}
-          data-tooltip-id="tooltip"
-          data-tooltip-html={
-            !watchDetails
-              ? "More <span class='tooltip-btn'>SHIFT + M</span></div>"
-              : "close <span class='tooltip-btn'>SHIFT + M</span></div>"
-          }
-        >
-          {watchDetails ? <BsHddStackFill /> : <BsHddStack />}
+                }
+              >
+                <FaForwardStep
+                  className={`${episode >= maxEpisodes && season >= maxSeason ? styles.inactive : null} ${episode >= maxEpisodes && season < maxSeason ? styles.nextSeason : null}`}
+                />
+              </div>
+            </>
+          ) : null}
+          <div
+            ref={moreBtn}
+            onClick={() => setWatchDetails(!watchDetails)}
+            data-tooltip-id="tooltip"
+            data-tooltip-html={
+              !watchDetails
+                ? "More <span class='tooltip-btn'>SHIFT + M</span></div>"
+                : "close <span class='tooltip-btn'>SHIFT + M</span></div>"
+            }
+          >
+            {watchDetails ? <BsHddStackFill /> : <BsHddStack />}
+          </div>
         </div>
-      </div>
-
+      }
       {watchDetails && (
         <WatchDetails
           id={id}
@@ -254,7 +252,6 @@ const Watch = () => {
           setWatchDetails={setWatchDetails}
         />
       )}
-
       <select
         name="source"
         id="source"
@@ -262,23 +259,94 @@ const Watch = () => {
         value={source}
         onChange={(e) => setSource(e.target.value)}
       >
-        <option value="VIDSRC">VIDSRC</option>
-        <option value="VIDVIP">VIDVIP</option>
-        <option value="EMB">EMB</option>
-        <option value="TURBOVID">TURBOVID</option>
-        <option value="MOVIESAPI">MOVIESAPI</option>
+        <option value="AGG">Aggregator : 1 (Multi-Server)</option>
+        <option value="VID">Aggregator : 2 (Best-Server)</option>
+        <option value="PRO">Aggregator : 3 (HQ-Server)</option>
+        <option value="EMB">Aggregator : 4</option>
+        <option value="MULTI">Aggregator : 5 (Fast-Server)</option>
+        <option value="SUP" defaultChecked>
+          Aggregator : 6 (Multi/Most-Server)
+        </option>
       </select>
-
       <div className={`${styles.loader} skeleton`}></div>
 
-      {id && (
+      {source === "AGG" && id !== "" && id !== null ? (
         <iframe
           scrolling="no"
-          src={getStreamUrl()}
+          src={
+            type === "movie"
+              ? `${STREAM_URL_AGG}/embed/${id}`
+              : `${STREAM_URL_AGG}/embed/${id}/${season}/${episode}`
+          }
           className={styles.iframe}
           allowFullScreen
-        />
-      )}
+        ></iframe>
+      ) : null}
+
+      {source === "VID" && id !== "" && id !== null ? (
+        <iframe
+          scrolling="no"
+          src={
+            type === "movie"
+              ? `${STREAM_URL_VID}/embed/${type}/${id}`
+              : `${STREAM_URL_VID}/embed/${type}/${id}/${season}/${episode}`
+          }
+          className={styles.iframe}
+          allowFullScreen
+        ></iframe>
+      ) : null}
+
+      {source === "PRO" && id !== "" && id !== null ? (
+        <iframe
+          scrolling="no"
+          src={
+            type === "movie"
+              ? `${STREAM_URL_PRO}/embed/${type}/${id}`
+              : `${STREAM_URL_PRO}/embed/${type}/${id}/${season}/${episode}`
+          }
+          className={styles.iframe}
+          allowFullScreen
+        ></iframe>
+      ) : null}
+
+      {source === "EMB" && id !== "" && id !== null ? (
+        <iframe
+          scrolling="no"
+          src={
+            type === "movie"
+              ? `${STREAM_URL_EMB}/embed/${type}/${id}`
+              : `${STREAM_URL_EMB}/embed/${type}/${id}/${season}/${episode}`
+          }
+          className={styles.iframe}
+          allowFullScreen
+        ></iframe>
+      ) : null}
+
+      {source === "MULTI" && id !== "" && id !== null ? (
+        <iframe
+          scrolling="no"
+          src={
+            type === "movie"
+              ? `${STREAM_URL_MULTI}?video_id=${id}&tmdb=1`
+              : `${STREAM_URL_MULTI}?video_id=${id}&tmdb=1&s=${season}&e=${episode}`
+          }
+          className={styles.iframe}
+          allowFullScreen
+        ></iframe>
+      ) : null}
+
+      {source === "SUP" && id !== "" && id !== null ? (
+        <iframe
+          scrolling="no"
+          src={
+            type === "movie"
+              ? `${STREAM_URL_SUP}/?video_id=${id}&tmdb=1`
+              : `${STREAM_URL_SUP}/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`
+          }
+          className={styles.iframe}
+          allowFullScreen
+        ></iframe>
+      ) : null}
     </div>
   );
 };
