@@ -315,8 +315,8 @@ const Watch = () => {
           scrolling="no"
           src={
             type === "movie"
-              ? `${STREAM_URLS.MOVIESAPI}/embed/movie/${id}`
-              : `${STREAM_URLS.MOVIESAPI}/embed/tv/${id}/${season}/${episode}`
+              ? `${STREAM_URLS.MOVIESAPI}/movie/${id}`
+              : `${STREAM_URLS.MOVIESAPI}/tv/${id}-${season}-${episode}`
           }
           className={styles.iframe}
           allowFullScreen
